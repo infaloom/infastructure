@@ -1,0 +1,62 @@
+mode: recovery
+
+recovery:
+  method: object_store
+  # pitrTarget:
+  #   time: "2024-06-01T12:00:00Z"
+  clusterName: "cnpg-cluster"
+  provider: s3
+  endpointURL: ${CNPG_BACKUP_S3_ENDPOINT_URL}
+  secret:
+    create: false
+    name: cnpg-backup-s3-creds
+  s3:
+    region: ""
+    bucket: "cnpg-backup"
+    path: "/v1"
+
+backups:
+  enabled: false # Backups are disabled for recovery clusters
+  provider: s3
+  endpointURL: ${CNPG_BACKUP_S3_ENDPOINT_URL}
+  secret:
+    create: false
+    name: cnpg-cluster-backup-s3-creds
+  s3:
+    region: ""
+    bucket: cnpg-backup
+    path: "/v2" # !!! CHANGE THIS PATH ON EACH RECOVERY !!!
+  scheduledBackups:
+    - name: daily-backup
+      schedule: "0 0 0 * * *" # Daily at midnight
+      backupOwnerReference: self
+  retentionPolicy: "45d"
+  data:
+    compression: "gzip"
+    encryption: ""
+  wal:
+    compression: "gzip"
+    encryption: ""
+
+cluster:
+  instances: 3
+
+  enableSuperuserAccess: true
+  superuserSecret: cnpg-superuser-secret
+
+  storage:
+    storageClass: ceph-block
+    size: 10Gi
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: DoesNotExist
+
+  monitoring:
+    enabled: true
+    podMonitor:
+      enabled: true

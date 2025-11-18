@@ -1,0 +1,14 @@
+﻿apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-middleware-hq-ipallowlist
+  namespace: kube-system
+spec:
+  ipAllowList:
+    sourceRange:
+      - ${SSH_SOURCE_IP}/32
+      - "10.0.1.0/24" # Hetzner subnet
+      - "10.42.0.0/16" # k8s internal network
+    # Allow based on 'X-Forwarded-For' with depth=0; This is probably due to the fact that we are using PROXY protocol
+    ipStrategy:
+      depth: 0

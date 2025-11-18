@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ceph-dashboard-ingress
+  namespace: rook-ceph
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-traefik-middleware-redirect-https@kubernetescrd,kube-system-traefik-middleware-hq-ipallowlist@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: ceph-dashboard.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: rook-ceph-mgr-dashboard
+                port:
+                  number: 7000
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - ceph-dashboard.${CLUSTER_DOMAIN}
+      secretName: ceph-dashboard.${CLUSTER_DOMAIN}-tls

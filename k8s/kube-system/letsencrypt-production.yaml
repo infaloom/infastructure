@@ -1,0 +1,17 @@
+﻿apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-production
+  namespace: kube-system
+spec:
+  acme:
+    # Staging API: https://acme-staging-v02.api.letsencrypt.org/directory
+    # Production API: https://acme-v02.api.letsencrypt.org/directory
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: ${LETSENCRYPT_EMAIL}
+    privateKeySecretRef:
+      name: letsencrypt-production
+    solvers:
+    - http01:
+        ingress:
+          class: traefik

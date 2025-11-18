@@ -1,0 +1,86 @@
+expose:
+  # Set how to expose the service. Set the type as "ingress", "clusterIP", "nodePort" or "loadBalancer"
+  # and fill the information in the corresponding section
+  type: ingress
+  ingress:
+    hosts:
+      core: harbor.${CLUSTER_DOMAIN}
+    # set to the type of ingress controller if it has specific requirements.
+    # leave as `default` for most ingress controllers.
+    # set to `gce` if using the GCE ingress controller
+    # set to `ncp` if using the NCP (NSX-T Container Plugin) ingress controller
+    # set to `alb` if using the ALB ingress controller
+    # set to `f5-bigip` if using the F5 BIG-IP ingress controller
+    controller: default
+    ## Allow .Capabilities.KubeVersion.Version to be overridden while creating ingress
+    kubeVersionOverride: ""
+    className: "traefik"
+    annotations:
+      # note different ingress controllers may require a different ssl-redirect annotation
+      # for Envoy, use ingress.kubernetes.io/force-ssl-redirect: "true" and remove the nginx lines below
+      cert-manager.io/cluster-issuer: letsencrypt-production
+      traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.middlewares: kube-system-traefik-middleware-redirect-https@kubernetescrd,kube-system-traefik-middleware-hq-ipallowlist@kubernetescrd
+    # ingress-specific labels
+    labels: {}
+
+# The external URL for Harbor core service. It is used to
+# 1) populate the docker/helm commands showed on portal
+# 2) populate the token service URL returned to docker client
+#
+# Format: protocol://domain[:port]. Usually:
+# 1) if "expose.type" is "ingress", the "domain" should be
+# the value of "expose.ingress.hosts.core"
+# 2) if "expose.type" is "clusterIP", the "domain" should be
+# the value of "expose.clusterIP.name"
+# 3) if "expose.type" is "nodePort", the "domain" should be
+# the IP address of k8s node
+#
+# If Harbor is deployed behind the proxy, set it as the URL of proxy
+externalURL: https://harbor.${CLUSTER_DOMAIN}
+
+# The persistence is enabled by default and a default StorageClass
+# is needed in the k8s cluster to provision volumes dynamically.
+# Specify another StorageClass in the "storageClass" or set "existingClaim"
+# if you already have existing persistent volumes to use
+#
+# For storing images and charts, you can also use "azure", "gcs", "s3",
+# "swift" or "oss". Set it in the "imageChartStorage" section
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      # Specify the "storageClass" used to provision the volume. Or the default
+      # StorageClass will be used (the default).
+      # Set it to "-" to disable dynamic provisioning
+      storageClass: "ceph-block"
+    jobservice:
+      jobLog:
+        storageClass: "ceph-block"
+    # If external Redis is used, the following settings for Redis will
+    # be ignored
+    redis:
+      storageClass: "ceph-block"
+    trivy:
+      storageClass: "ceph-block"
+
+# The initial password of Harbor admin. Change it from portal after launching Harbor
+# or give an existing secret for it
+# key in secret is given via (default to HARBOR_ADMIN_PASSWORD)
+existingSecretAdminPassword: "harbor-admin-password"
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+
+database:
+  # if external database is used, set "type" to "external"
+  # and fill the connection information in "external" section
+  type: external
+  external:
+    host: "cnpg-cluster-rw.cnpg-system.svc.cluster.local"
+    username: "postgres"
+    # if using existing secret, the key must be "password"
+    existingSecret: "harbor-cnpg-password"

@@ -1,0 +1,15 @@
+﻿apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  custom.server: |
+    harbor.${CLUSTER_DOMAIN}:53 {
+      errors
+      cache 30
+      hosts {
+        10.0.1.1 harbor.${CLUSTER_DOMAIN}
+        fallthrough
+      }
+    }

@@ -1,0 +1,57 @@
+server:
+  auditStorage:
+    enabled: true
+    storageClass: "ceph-block"
+    size: 2Gi
+
+  dataStorage:
+    storageClass: "ceph-block"
+    size: 2Gi
+
+  volumes:
+    - name: openbao-unseal-key
+      secret:
+        defaultMode: 420
+        secretName: openbao-unseal-key
+  volumeMounts:
+    - name: openbao-unseal-key
+      mountPath: /openbao/secrets
+      readOnly: true
+
+  ha:
+    enabled: true
+    replicas: 3
+    raft:
+      enabled: true
+      config: |
+        ui = true
+
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+
+        storage "raft" {
+          path = "/openbao/data"
+
+          retry_join {
+            leader_api_addr = "http://openbao-0.openbao-internal:8200"
+          }
+
+          retry_join {
+            leader_api_addr = "http://openbao-1.openbao-internal:8200"
+          }
+
+          retry_join {
+            leader_api_addr = "http://openbao-2.openbao-internal:8200"
+          }
+        }
+
+        seal "static" {
+          current_key_id = "openbao-unseal-1"
+          current_key = "file:///openbao/secrets/openbao-unseal-1.key"
+        }
+
+injector:
+  enabled: false

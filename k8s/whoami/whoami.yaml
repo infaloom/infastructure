@@ -1,0 +1,105 @@
+﻿---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: whoami
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: busybox-logs
+  namespace: whoami
+spec:
+  storageClassName: ceph-block
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 50Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whoami-deployment
+  namespace: whoami
+spec:
+  selector:
+    matchLabels:
+      app: whoami-deployment
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: whoami-deployment
+    spec:
+      volumes:
+        - name: busybox-logs
+          persistentVolumeClaim:
+            claimName: busybox-logs
+      containers:
+        - name: traefik-whoami
+          image: traefik/whoami
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+        - name: busybox
+          image: busybox
+          command: ["/bin/sh", "-c"]
+          args: ["echo $(hostname) @ $(date) >> /source/data/data.txt && sleep 3000"] # writes to the PVC for the purpose of testing backup/restore
+          volumeMounts:
+            - mountPath: "/source/data"
+              name: busybox-logs
+              readOnly: false
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whoami-service
+  namespace: whoami
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+  selector:
+    app: whoami-deployment
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: whoami-ingress
+  namespace: whoami
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-traefik-middleware-redirect-https@kubernetescrd,kube-system-traefik-middleware-hq-ipallowlist@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: whoami.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: whoami-service
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - whoami.${CLUSTER_DOMAIN}
+      secretName: whoami.${CLUSTER_DOMAIN}-tls

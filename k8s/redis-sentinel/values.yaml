@@ -1,0 +1,80 @@
+﻿global:
+  defaultStorageClass: "ceph-block"
+  security:
+    allowInsecureImages: true # Must be enabled for any non-official bitnami repository
+
+auth:
+  enabled: true
+  sentinel: true
+  existingSecret: redis-password-secret
+
+metrics:
+  serviceMonitor:
+    enabled: true
+  image:
+    repository: bitnamilegacy/redis-exporter
+
+image:
+  repository: bitnamilegacy/redis
+
+master:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: DoesNotExist
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+    limits:
+      cpu: 750m
+      memory: 1536Mi  
+
+replica:
+  replicaCount: 3
+
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: node-role.kubernetes.io/master
+            operator: DoesNotExist
+
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1024Mi
+    limits:
+      cpu: 750m
+      memory: 1536Mi
+
+sentinel:
+  enabled: true
+
+  image:
+    repository: bitnamilegacy/redis-sentinel
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 150m
+      memory: 192Mi
+
+volumePermissions:
+  image:
+    repository: bitnamilegacy/os-shell
+
+kubectl:
+  image:
+    repository: bitnamilegacy/kubectl
+
+sysctl:
+  image:
+    repository: bitnamilegacy/os-shell

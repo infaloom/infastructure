@@ -1,0 +1,21 @@
+﻿prometheus:
+  prometheusSpec:
+    # The following ensures all namespaces are monitored
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
+grafana:
+  admin:
+    existingSecret: grafana-admin-credentials
+  additionalDataSources:
+  - name: Loki Fluentbit
+    type: loki
+    isDefault: false
+    access: proxy
+    url: http://loki-gateway.loki.svc.cluster.local
+    jsonData:
+      httpHeaderName1: 'X-Scope-OrgID'
+    secureJsonData:
+      httpHeaderValue1: 'fluent-bit'

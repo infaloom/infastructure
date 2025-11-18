@@ -1,0 +1,15 @@
+---
+- name: Disable UFW Firewall on All Hosts
+  hosts: all                   # Target all hosts defined in the inventory
+  become: true                  # Execute tasks with root privileges (e.g., using sudo)
+  gather_facts: false             # Optional: Skip gathering facts if not needed for faster execution
+
+  tasks:
+    - name: Ensure UFW is disabled
+      ansible.builtin.command: ufw disable # Use the command module for the ufw disable action
+      changed_when: "'Firewall stopped and disabled' in ufw_disable_result.stdout" # Mark as changed only if the command actually disabled it
+      register: ufw_disable_result # Store the output of the command
+
+    - name: Display UFW disable status
+      ansible.builtin.debug:
+        msg: "{{ ufw_disable_result.stdout_lines }}"

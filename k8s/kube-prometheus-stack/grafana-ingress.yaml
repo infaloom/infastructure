@@ -1,0 +1,27 @@
+﻿apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: kube-prometheus-stack
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-production
+    traefik.ingress.kubernetes.io/router.entrypoints: web, websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: kube-system-traefik-middleware-redirect-https@kubernetescrd,kube-system-traefik-middleware-hq-ipallowlist@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: grafana.${CLUSTER_DOMAIN}
+      http:
+        paths:
+          - backend:
+              service:
+                name: kube-prometheus-stack-grafana
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - grafana.${CLUSTER_DOMAIN}
+      secretName: grafana.${CLUSTER_DOMAIN}-tls

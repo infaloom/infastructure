@@ -1,0 +1,10 @@
+config:
+  ## https://docs.fluentbit.io/manual/pipeline/outputs
+  outputs: |
+    [OUTPUT]
+        name                   loki
+        host                   loki-gateway.loki.svc.cluster.local
+        port                   80
+        match                  *
+        auto_kubernetes_labels on
+        tenant_id              fluent-bit

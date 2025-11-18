@@ -1,0 +1,25 @@
+# Installs a debugging toolbox deployment
+toolbox:
+  # -- Enable Ceph debugging pod deployment. See [toolbox](../Troubleshooting/ceph-toolbox.md)
+  enabled: true
+
+monitoring:
+  # -- Enable Prometheus integration, will also create necessary RBAC rules to allow Operator to create ServiceMonitors.
+  # Monitoring requires Prometheus to be pre-installed
+  enabled: true
+                
+# All values below are taken from the CephCluster CRD
+# -- Cluster configuration.
+# @default -- See [below](#ceph-cluster-spec)
+cephClusterSpec:
+  placement:
+    all:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: DoesNotExist
+  dashboard:
+    enabled: true
+    ssl: false

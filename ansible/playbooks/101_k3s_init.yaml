@@ -1,0 +1,75 @@
+---
+- name: Initialize K3s Cluster on server1
+  hosts: server1
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Check if K3s is already installed (simple check)
+      ansible.builtin.stat:
+        path: /etc/rancher/k3s/k3s.yaml
+      register: k3s_config_file
+
+    - name: Ensure K3s configuration directory exists
+      file:
+        path: /etc/rancher/k3s
+        recurse: true
+        state: directory
+
+    - name: Create/Update K3s registry mirrors configuration
+      ansible.builtin.copy:
+        dest: /etc/rancher/k3s/registries.yaml # The target file path
+        content: |                             # Use literal block scalar for multi-line content
+          mirrors:
+            docker.io:
+            registry.k8s.io:
+        owner: root          # Or appropriate user K3s runs as
+        group: root          # Or appropriate group K3s runs as
+        mode: '0644'         # Standard config file permissions
+        backup: yes          # Optional: Creates a timestamped backup if the file changes
+
+    - name: Install K3s Server (cluster-init)
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -s - server --cluster-init --tls-san $K8S_URL --flannel-iface enp7s0 --node-ip 10.0.1.11 --embedded-registry
+      args:
+        executable: /bin/bash # Explicitly use bash if needed
+        # This prevents the command from showing up in logs if you have sensitive info (token is in env)
+        # no_log: true
+      environment:
+        K3S_TOKEN: "{{ lookup('ansible.builtin.env', 'K3S_TOKEN') }}"
+        INSTALL_K3S_VERSION: "{{ lookup('ansible.builtin.env', 'INSTALL_K3S_VERSION') }}"
+        K8S_URL: "{{ lookup('ansible.builtin.env', 'K8S_URL') }}"
+      register: k3s_install_result
+      changed_when: "'Started k3s' in k3s_install_result.stdout" # Adjust if needed based on actual output
+      when: not k3s_config_file.stat.exists # Only run if the config file doesn't exist
+      
+    - name: Display K3s installation output
+      ansible.builtin.debug:
+        var: k3s_install_result.stdout_lines
+      when: k3s_install_result is defined and k3s_install_result.stdout_lines is defined
+
+    - name: Fail if K3s installation command failed but file check passed (edge case)
+      ansible.builtin.fail:
+        msg: "K3s installation command failed. Check logs on the node. Stderr: {{ k3s_install_result.stderr }}"
+      when:
+        - not k3s_config_file.stat.exists # Ran the install task
+        - k3s_install_result is defined
+        - k3s_install_result.rc != 0      # Command returned non-zero exit code
+
+    - name: Wait briefly for K3s server config to become available (if installed)
+      ansible.builtin.wait_for:
+        path: /etc/rancher/k3s/k3s.yaml
+        state: present
+        timeout: 60
+      when: not k3s_config_file.stat.exists # Only wait if we potentially installed it
+
+    - name: Read the K3s config (for verification, optional)
+      ansible.builtin.slurp:
+        src: /etc/rancher/k3s/k3s.yaml
+      register: k3s_config_content
+      when: not k3s_config_file.stat.exists # Only if we potentially installed it
+
+    - name: Display K3s config path
+      ansible.builtin.debug:
+        msg: "K3s config found at /etc/rancher/k3s/k3s.yaml. Use 'k3s kubectl' on the node or copy config locally."
+      when: k3s_config_file.stat.exists or (k3s_config_content is defined and k3s_config_content.content)

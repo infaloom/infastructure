@@ -1,0 +1,5 @@
+config:
+  clusterWide: false
+
+monitoring:
+  podMonitorEnabled: true
