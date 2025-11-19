@@ -8,7 +8,7 @@ helm repo add external-secrets https://charts.external-secrets.io
 ```
 ```bash
 helm upgrade --install external-secrets external-secrets/external-secrets \
---version 0.20.4
+--version 0.20.4 \
 --namespace external-secrets --create-namespace
 ```
 
@@ -22,6 +22,13 @@ Add cluster secret store which connects to OpenBao
 ```bash
 kubectl apply -f k8s/external-secrets/cluster-secret-store-backend.yaml
 ```
+
+If you get an error:
+```txt
+Internal error occurred: failed calling webhook "validate.clustersecretstore.external-secrets.io": failed to call webhook: Post "https://external-secrets-webhook.external-secrets.svc:443/validate-external-secrets-io-v1-clustersecretstore?timeout=5s": no endpoints available for service "external-secrets-webhook"
+```
+
+Wait a few moments and try again.
 
 ## Example external secret
 Use OpenBao CLI to create a test kv engine secret named `foo` with key `bar` and value `baz`:

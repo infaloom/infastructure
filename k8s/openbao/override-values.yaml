@@ -1,11 +1,11 @@
 server:
   auditStorage:
     enabled: true
-    storageClass: "ceph-block"
+    storageClass: "local-path"
     size: 2Gi
 
   dataStorage:
-    storageClass: "ceph-block"
+    storageClass: "local-path"
     size: 2Gi
 
   volumes:

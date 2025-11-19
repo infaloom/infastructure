@@ -20,9 +20,13 @@ helm upgrade --install rook-ceph rook-release/rook-ceph \
 
 Install ceph cluster
 :::note
-It takes a while for the ceph cluster to stabilize. 3-5 minutes from my experience.
+It takes a while for the ceph cluster to stabilize. 5-6 minutes from my experience.
 Don't continue with the later commands until the cluster is ready.
-You'll know it is ready when all pods in the `rook-ceph` namespace are `Running`.
+
+```bash
+kubectl --namespace rook-ceph get cephcluster
+```
+PHASE should be `Ready`.
 :::
 
 ```bash
@@ -33,8 +37,10 @@ helm upgrade --install rook-ceph-cluster rook-release/rook-ceph-cluster \
 ```
 
 ## Enable rook orchestrator
-```sh
+```bash
 kubectl -n rook-ceph exec -it deploy/rook-ceph-tools -- bash
+```
+```bash
 ceph mgr module enable rook
 ceph orch set backend rook
 ceph orch status
@@ -45,16 +51,31 @@ Backend: rook
 Available: Yes
 ```
 
+Then manually disable ssl on manager because this isn't properly picked up by default
+```bash
+ceph config set mgr mgr/dashboard/ssl false
+```
+
 ## Enable ceph dashboard
 
 ```bash
 envsubst < k8s/rook-ceph/ceph-dashboard-ingress.yaml | kubectl apply --wait -f -
 ```
+Run this to get the admin password
+```bash
+kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode && echo
+```
+
+Run the following command to get the dashboard URL
+```bash
+echo "Access the dashboard at https://ceph-dashboard.${CLUSTER_DOMAIN}"
+echo "Username: admin"
+echo "Password: $(kubectl -n rook-ceph get secret rook-ceph-dashboard-password -o jsonpath="{['data']['password']}" | base64 --decode)"
+```
 
 ## Expose RGW ingress
 
-We'll use this for syncing object stores with remote location
-
+Optional: If you want to expose the S3 compatible RGW endpoint via ingress, run the following command:
 ```bash
 envsubst < k8s/rook-ceph/rgw-ingress.yaml | kubectl apply --wait -f -
 ```

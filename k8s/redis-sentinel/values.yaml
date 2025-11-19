@@ -23,7 +23,7 @@ master:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: node-role.kubernetes.io/master
+          - key: node-role.kubernetes.io/control-plane
             operator: DoesNotExist
 
   resources:
@@ -42,7 +42,7 @@ replica:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: node-role.kubernetes.io/master
+          - key: node-role.kubernetes.io/control-plane
             operator: DoesNotExist
 
   resources:
