@@ -1,22 +1,34 @@
 # Provision the cloud resources
 
-Export pulumi working directory
-```bash
-export PULUMI_CWD=$PWD/pulumi/hetzner/
-```
-
-Export pulumi passphrase
-```bash
-export PULUMI_CONFIG_PASSPHRASE=$(read -s; echo $REPLY)
-```
-
 :::info
 As a convenience, there is a script to export pulumi working dir and the passphrase.
 ```bash
 source scripts/export_pulumi_env.sh
 ```
 You can execute the above command every time you open a new terminal session to set the environment variables.
+
+If you come across `command not found` due to line endings on WSL, you can convert the script to use Unix line endings with the following command:
+
+```bash
+sudo apt-get install dos2unix
+```
+
+```bash
+dos2unix scripts/export_pulumi_env.sh
+```
+
+You can also set the environment variables manually as shown below.
 :::
+
+Export pulumi working directory
+```bash
+export PULUMI_CWD=$PWD/pulumi/hetzner/
+```
+
+Export pulumi passphrase. Type a strong passphrase, 16 or more characters long, and press enter.
+```bash
+export PULUMI_CONFIG_PASSPHRASE=$(read -s; echo $REPLY)
+```
 
 # Provision the Hetzner cloud resources
 
