@@ -51,7 +51,8 @@ Create stack with a passphrase.
 pulumi --cwd $PULUMI_CWD stack init production --secrets-provider=passphrase
 ```
 
-Get the hcloud token from `https://console.hetzner.cloud/projects/{REPLACE_WITH_YOUR_HETZNER_CLOUD_PROJECT_ID}/security/tokens`
+Go to https://console.hetzner.com/projects and create a new project.  
+Go to Security -> API Tokens and create a new token with `Read & Write` permissions.
 ```bash
 pulumi --cwd $PULUMI_CWD config set --secret hcloud:token {REPLACE_WITH_YOUR_HETZNER_CLOUD_TOKEN}
 ```
