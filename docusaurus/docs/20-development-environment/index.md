@@ -4,13 +4,23 @@
 We are fixing the version of the tools used in this guide to ensure reproducibility.
 :::
 
-## If running on Windows
+## Linux
+**Ubuntu 24.04.1 LTS** (We used wsl on Windows)
+
+### If running on Windows
 
 Ensure you use `wsl` to run the commands because of the `bash` scripts.
 Follow the instructions on https://learn.microsoft.com/en-us/windows/wsl/install
 
-## Linux
-**Ubuntu 24.04.1 LTS** (We used wsl on Windows)
+Install Ubuntu 24.04 distro.
+:::powershell
+wsl --install Ubuntu-24.04 --name infastructure
+:::
+
+For later use you can run it with:
+:::powershell
+wsl -d infastructure
+:::
 
 ## Git
 https://git-scm.com/
