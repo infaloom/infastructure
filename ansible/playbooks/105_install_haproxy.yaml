@@ -1,0 +1,35 @@
+---
+- name: Install HAProxy and configure
+  hosts: serverLbs # Target the server load balancer server group
+  become: true # Execute tasks with root privileges (e.g., using sudo)
+  gather_facts: false # Optional: Skip gathering facts if not needed for faster execution
+
+  tasks:
+    - name: Install HAProxy
+      ansible.builtin.apt:
+        name: haproxy=2.8.5-1ubuntu3.4
+        state: present
+    
+    - name: Deploy HAProxy configuration for K3s load balancing
+      ansible.builtin.blockinfile:
+        path: /etc/haproxy/haproxy.cfg
+        block: |
+          frontend k3s-frontend
+              bind *:6443
+              mode tcp
+              option tcplog
+              default_backend k3s-backend
+
+          backend k3s-backend
+              mode tcp
+              option tcp-check
+              balance roundrobin
+              default-server inter 10s downinter 5s
+              server server-1 10.0.1.11:6443 check
+              server server-2 10.0.1.12:6443 check
+              server server-3 10.0.1.13:6443 check
+
+    - name: Restart HAProxy to apply new configuration
+      ansible.builtin.service:
+        name: haproxy
+        state: restarted

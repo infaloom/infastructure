@@ -4,21 +4,23 @@
 
 K3s token:
 ```bash
-pulumi config set --secret k3s:token $(openssl rand -base64 32)
+pulumi --cwd $PULUMI_CWD config set --secret k3s:token $(openssl rand -base64 32)
 ```
 Cluster domain:
 ```bash
-pulumi config set --secret cluster:domain {REPLACE_WITH_YOUR_DOMAIN}
+pulumi --cwd $PULUMI_CWD config set --secret cluster:domain {REPLACE_WITH_YOUR_DOMAIN}
 ```
 
-:::warning
+:::important
 Cluster domain is the domain you will use to access services like Harbor, Grafana, etc. Ensure that this domain is properly configured in your DNS to point to the load balancer's IP address.
 
-Additionally, point wildcard subdomains to the load balancer's IP address to ensure proper routing of the cluster services.
+For example, if your cluster domain is `infrastructure.example.com`, you should create DNS record for:
+- `*.infrastructure.example.com` -> Load Balancer IP
 
-For example, if your domain is `example.com`, you should create DNS records for:
-- `cluster.example.com` -> Load Balancer IP
-- `*.cluster.example.com` -> Load Balancer IP
+Run the following for instructions to point your DNS to the load balancer IP
+```bash
+echo "Point your *.${CLUSTER_DOMAIN} DNS record to $(pulumi --cwd $PULUMI_CWD stack output clusterLoadBalancer.Ipv4Address) IP address"
+```
 :::
 
 ## Export necessary environment variables

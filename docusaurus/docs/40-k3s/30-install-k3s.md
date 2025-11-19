@@ -4,6 +4,15 @@ Registry mirroring is enabled because some Hetzner servers are blacklisted. By e
 ensure that the image is available to the cluster by being able to pull from any of the nodes.
 https://docs.k3s.io/installation/registry-mirror
 
+## Prepare private ssh key
+
+Ensure that the private ssh key corresponding to the public key you provided during pulumi provisioning is available on your local machine.
+For example, if you provided `~/.ssh/id_rsa.pub` during pulumi provisioning, ensure that `~/.ssh/id_rsa` is available on your local machine.
+Also ensure that the private key has the correct permissions.
+```bash
+chmod 600 ~/.ssh/id_rsa
+```
+
 ## Disable ufw on all servers
 
 This is K3s prerequisite. The servers are not accessible from the internet anyway.

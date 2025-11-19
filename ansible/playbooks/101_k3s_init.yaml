@@ -72,4 +72,4 @@
     - name: Display K3s config path
       ansible.builtin.debug:
         msg: "K3s config found at /etc/rancher/k3s/k3s.yaml. Use 'k3s kubectl' on the node or copy config locally."
-      when: k3s_config_file.stat.exists or (k3s_config_content is defined and k3s_config_content.content)
+      when: k3s_config_file.stat.exists or (k3s_config_content is defined and k3s_config_content.content | length > 0)

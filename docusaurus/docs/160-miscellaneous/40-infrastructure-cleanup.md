@@ -7,11 +7,11 @@ Ensure you understand the impact. These commands delete the resources. The actio
 Destroy all resources during experimentation to save costs:
 
 ```bash
-pulumi destroy
+pulumi --cwd $PULUMI_CWD destroy
 ```
 
 Reset the local state to the beginning and start over:
 
 ```bash
-pulumi state delete --all
+pulumi --cwd $PULUMI_CWD state delete --all
 ```

@@ -1,46 +1,20 @@
 # Access the K3s cluster
 
-## Prerequisites
-
-- Install kubectl on your local machine https://kubernetes.io/docs/tasks/tools/install-kubectl/
-
 ## Control plane high availability
 
-SSH into serverLb
+To ensure high availability of the Kubernetes control plane, we will set up a load balancer using HAProxy on a separate server (serverLb) that will distribute traffic to the K3s server nodes.
 ```bash
-ssh root@$(pulumi --cwd $PULUMI_CWD stack output serverLb.Ipv4Address)
+ansible-playbook -i ./ansible/inventory.yaml ./ansible/playbooks/105_install_haproxy.yaml
 ```
-
-Install HAProxy
-```bash
-sudo apt update && \
-sudo apt install haproxy=2.8.5-1ubuntu3.4
-```
-
-Append the following lines to /etc/haproxy/haproxy.cfg
-
-```
-frontend k3s-frontend
-    bind *:6443
-    mode tcp
-    option tcplog
-    default_backend k3s-backend
-
-backend k3s-backend
-    mode tcp
-    option tcp-check
-    balance roundrobin
-    default-server inter 10s downinter 5s
-    server server-1 10.0.1.11:6443 check
-    server server-2 10.0.1.12:6443 check
-    server server-3 10.0.1.13:6443 check
-```
-
-Run `systemctl restart haproxy`
 
 ## Get kubeconfig from the server
 
 Copy kube config from server1. You run this command __ONCE__ during the initial setup.
+
+```bash
+mkdir -p ~/.kube
+```
+
 ```bash
 scp root@$(pulumi --cwd $PULUMI_CWD stack output server1.Ipv4Address):/etc/rancher/k3s/k3s.yaml ~/.kube/config-pulumi-hetzner-k3s
 ```
