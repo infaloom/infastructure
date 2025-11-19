@@ -13,37 +13,42 @@ Ensure you use `wsl` to run the commands because of the `bash` scripts.
 Follow the instructions on https://learn.microsoft.com/en-us/windows/wsl/install
 
 Install Ubuntu 24.04 distro.
-:::powershell
+```powershell
 wsl --install Ubuntu-24.04 --name infastructure
-:::
+```
 
 For later use you can run it with:
-:::powershell
+```powershell
 wsl -d infastructure
-:::
+```
+
+## Update list of packages
+```bash
+sudo apt update
+```
 
 ## Git
 https://git-scm.com/
 ```bash
-sudo apt install git=1:2.43.0-1ubuntu7.3
+sudo apt install git=1:2.43.0-1ubuntu7.3 -y
 ```
 
 ## .NET
 https://dotnet.microsoft.com/
 ```bash
-sudo apt install dotnet-sdk-8.0
+sudo apt install dotnet-sdk-8.0 -y
 ```
 
 ## Pulumi
 https://www.pulumi.com/
 ```bash
-curl -fsSL https://get.pulumi.com | sh -s -- --version v3.205.0
+curl -fsSL https://get.pulumi.com | sh -s -- --version 3.205.0
 ```
 
 ## Python
 https://www.python.org/
 ```bash
-sudo apt install python3=3.12.3-0ubuntu2.1
+sudo apt install python3=3.12.3-0ubuntu2.1 python3.12-venv=3.12.3-1ubuntu0.8 -y
 ```
 
 ### Ansible
@@ -75,5 +80,5 @@ pip install ansible==12.2.0
 
 https://kubernetes.io/docs/tasks/tools/install-kubectl/
 ```bash
-snap install kubectl --channel=1.32/stable --classic
+sudo snap install kubectl --channel=1.32/stable --classic
 ```
