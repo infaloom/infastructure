@@ -6,3 +6,4 @@
 - Continuous Integration / Continuous Deployment (CI/CD) for workloads
 - Alert rules and notifications (Prometheus, Grafana, Alertmanager)
 - Full cluster disaster recovery (restoring to a new Hetzner project)
+- Bash/Python Jupyter notebook for deploying the cluster and workloads
