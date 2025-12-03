@@ -1,1 +1,0 @@
-"use strict";(globalThis.webpackChunkdocs=globalThis.webpackChunkdocs||[]).push([[7472],{5513:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Initial Release","permalink":"/infastructure/blog/initial-release","unlisted":false,"date":"2025-11-18T00:00:00.000Z"}]}')}}]);

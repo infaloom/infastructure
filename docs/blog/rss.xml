@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?><?xml-stylesheet type="text/xsl" href="rss.xsl"?>
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
     <channel>
-        <title>Infastructure Blog</title>
-        <link>https://infaloom.github.io/infastructure/blog/</link>
-        <description>Infastructure Blog</description>
+        <title>Nursery Blog</title>
+        <link>https://infaloom.github.io/nursery/blog/</link>
+        <description>Nursery Blog</description>
         <lastBuildDate>Tue, 18 Nov 2025 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
         <item>
             <title><![CDATA[Initial Release]]></title>
-            <link>https://infaloom.github.io/infastructure/blog/initial-release/</link>
-            <guid>https://infaloom.github.io/infastructure/blog/initial-release/</guid>
+            <link>https://infaloom.github.io/nursery/blog/initial-release/</link>
+            <guid>https://infaloom.github.io/nursery/blog/initial-release/</guid>
             <pubDate>Tue, 18 Nov 2025 00:00:00 GMT</pubDate>
-            <description><![CDATA[Today we are open-sourcing Infastructure, the opinionated blueprint we use to run Infaloom's production workloads on a lean budget.]]></description>
-            <content:encoded><![CDATA[<p>Today we are open-sourcing <strong>Infastructure</strong>, the opinionated blueprint we use to run Infaloom's production workloads on a lean budget.</p>
+            <description><![CDATA[Today we are open-sourcing Nursery, the opinionated blueprint we use to run Infaloom's production workloads on a lean budget.]]></description>
+            <content:encoded><![CDATA[<p>Today we are open-sourcing <strong>Nursery</strong>, the opinionated blueprint we use to run Infaloom's production workloads on a lean budget.</p>
 <p>The project documents everything we've learned while standing up a six-node <a href="https://k3s.io/" target="_blank" rel="noopener noreferrer" class="">K3s</a> cluster on <a href="https://www.hetzner.com/" target="_blank" rel="noopener noreferrer" class="">Hetzner Cloud</a> with Pulumi for provisioning, Ansible for day-two automation, and a security-first stance powered by OpenBao + External Secrets. The full stack comes in at <strong>EUR&nbsp;187.34/month</strong> (November&nbsp;2025) and is designed for small teams that need production reliability.</p>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-you-get-in-v1">What you get in v1<a href="https://infaloom.github.io/infastructure/blog/initial-release/#what-you-get-in-v1" class="hash-link" aria-label="Direct link to What you get in v1" title="Direct link to What you get in v1" translate="no">​</a></h2>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-you-get-in-v1">What you get in v1<a href="https://infaloom.github.io/nursery/blog/initial-release/#what-you-get-in-v1" class="hash-link" aria-label="Direct link to What you get in v1" title="Direct link to What you get in v1" translate="no">​</a></h2>
 <ul>
 <li class=""><strong>Core platform</strong> – Automated Hetzner bootstrap, HA control plane access via HAProxy, and Rook-Ceph backed storage across three 200 GB nodes for ~200 GB of triple replicated capacity.</li>
 <li class=""><strong>Data services</strong> – CloudNativePG with scheduled S3-compatible off-site backups and Redis Sentinel (Bitnami legacy images) for stateful workloads.</li>
@@ -24,13 +24,13 @@
 <li class=""><strong>Security + secrets</strong> – OpenBao as the source of truth with ExternalSecrets syncing into the cluster, plus documented ingress, TLS, and IP allowlist patterns.</li>
 <li class=""><strong>Ops readiness</strong> – Step-by-step guides for monitoring, logging, disaster recovery, and everyday utilities, all pinned to tested tool versions for reproducibility.</li>
 </ul>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-it-matters">Why it matters<a href="https://infaloom.github.io/infastructure/blog/initial-release/#why-it-matters" class="hash-link" aria-label="Direct link to Why it matters" title="Direct link to Why it matters" translate="no">​</a></h2>
-<p>Managed Kubernetes is fantastic, but it quickly eats into the budget of bootstrapped startups. Infastructure shows that you can own the stack end-to-end, keep costs predictable, and still follow best practices for backups, observability, and multi-environment automation.</p>
-<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="dive-in">Dive in<a href="https://infaloom.github.io/infastructure/blog/initial-release/#dive-in" class="hash-link" aria-label="Direct link to Dive in" title="Direct link to Dive in" translate="no">​</a></h2>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="why-it-matters">Why it matters<a href="https://infaloom.github.io/nursery/blog/initial-release/#why-it-matters" class="hash-link" aria-label="Direct link to Why it matters" title="Direct link to Why it matters" translate="no">​</a></h2>
+<p>Managed Kubernetes is fantastic, but it quickly eats into the budget of bootstrapped startups. Nursery shows that you can own the stack end-to-end, keep costs predictable, and still follow best practices for backups, observability, and multi-environment automation.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="dive-in">Dive in<a href="https://infaloom.github.io/nursery/blog/initial-release/#dive-in" class="hash-link" aria-label="Direct link to Dive in" title="Direct link to Dive in" translate="no">​</a></h2>
 <ul>
-<li class="">Start with the <a class="" href="https://infaloom.github.io/infastructure/">introduction</a> for motivation, audience, and cluster specs.</li>
-<li class="">Follow the <a class="" href="https://infaloom.github.io/infastructure/development-environment/">development environment</a> and <a class="" href="https://infaloom.github.io/infastructure/getting-started/">getting started</a> guides to mirror our toolchain.</li>
-<li class="">Explore the service deep dives (CNPG, Redis, Harbor, ArgoCD, storage, secrets, DR, etc.) in documentation and keep an eye on the <a class="" href="https://infaloom.github.io/infastructure/roadmap/">roadmap</a> for what is coming next.</li>
+<li class="">Start with the <a class="" href="https://infaloom.github.io/nursery/">introduction</a> for motivation, audience, and cluster specs.</li>
+<li class="">Follow the <a class="" href="https://infaloom.github.io/nursery/development-environment/">development environment</a> and <a class="" href="https://infaloom.github.io/nursery/getting-started/">getting started</a> guides to mirror our toolchain.</li>
+<li class="">Explore the service deep dives (CNPG, Redis, Harbor, ArgoCD, storage, secrets, DR, etc.) in documentation and keep an eye on the <a class="" href="https://infaloom.github.io/nursery/roadmap/">roadmap</a> for what is coming next.</li>
 </ul>
 <p>Questions, ideas, or battle stories from your own clusters are very welcome — open an issue or start a discussion so we can keep improving the stack together.</p>]]></content:encoded>
         </item>
